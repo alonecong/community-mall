@@ -52,7 +52,7 @@ export default function Cart() {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="max-w-4xl mx-auto p-4" style={{ maxHeight: 'calc(100vh - 160px)', overflowY: 'auto' }}>
         {/* 购物车列表 */}
         <div className="space-y-4">
           {items.map((item) => {
@@ -74,17 +74,17 @@ export default function Cart() {
                         <span className="text-red-500 font-bold text-xl">¥{price}</span>
                         <span className="text-gray-500 text-sm ml-1">/{item.product.unit}</span>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3">
                         <button
                           onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                          className="w-12 h-12 bg-gray-200 hover:bg-gray-300 rounded-full text-2xl font-bold flex items-center justify-center active:scale-95 transition"
+                          className="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-full text-xl font-bold flex items-center justify-center active:scale-95 transition"
                         >
                           -
                         </button>
-                        <span className="text-2xl font-bold w-8 text-center">{item.quantity}</span>
+                        <span className="text-xl font-bold w-8 text-center">{item.quantity}</span>
                         <button
                           onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                          className="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full text-2xl font-bold flex items-center justify-center text-white active:scale-95 transition"
+                          className="w-10 h-10 bg-green-500 hover:bg-green-600 rounded-full text-xl font-bold flex items-center justify-center text-white active:scale-95 transition"
                         >
                           +
                         </button>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { useCart } from '../lib/cart'
 import { useAuth } from '../lib/auth'
 import { getAddresses, createOrder } from '../lib/api'
@@ -11,6 +12,7 @@ export default function Checkout() {
   const navigate = useNavigate()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [selectedAddressId, setSelectedAddressId] = useState<string>('')
+  const [selectedPayment, setSelectedPayment] = useState<'wechat' | 'alipay'>('wechat')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export default function Checkout() {
 
   const handlePayment = async () => {
     if (!selectedAddressId) {
-      alert('请选择收货地址')
+      toast.error('请选择收货地址')
       return
     }
 
@@ -122,6 +124,12 @@ export default function Checkout() {
           ) : (
             <p className="text-gray-500">暂无收货地址</p>
           )}
+          <Link
+            to="/addresses"
+            className="block mt-4 text-center bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-bold text-lg"
+          >
+            + 添加新地址
+          </Link>
         </div>
 
         {/* 商品清单 */}
@@ -157,16 +165,33 @@ export default function Checkout() {
         <div className="bg-white rounded-lg shadow-sm p-4">
           <h2 className="text-xl font-bold mb-4">支付方式</h2>
           <div className="space-y-2">
-            <div className="flex items-center justify-between p-3 border-2 border-green-500 rounded-lg bg-green-50">
+            <div
+              onClick={() => setSelectedPayment('wechat')}
+              className={`flex items-center justify-between p-3 border-2 rounded-lg cursor-pointer ${
+                selectedPayment === 'wechat' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+              }`}
+            >
               <div className="flex items-center gap-2">
                 <span className="text-2xl">💚</span>
                 <span className="font-bold text-lg">微信支付</span>
               </div>
-              <span className="text-sm text-gray-500">推荐</span>
+              {selectedPayment === 'wechat' && (
+                <span className="text-sm text-green-600 font-bold">✓ 已选择</span>
+              )}
             </div>
-            <div className="flex items-center gap-2 p-3 border-2 border-gray-200 rounded-lg">
-              <span className="text-2xl">💙</span>
-              <span className="font-bold text-lg">支付宝</span>
+            <div
+              onClick={() => setSelectedPayment('alipay')}
+              className={`flex items-center justify-between p-3 border-2 rounded-lg cursor-pointer ${
+                selectedPayment === 'alipay' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">💙</span>
+                <span className="font-bold text-lg">支付宝</span>
+              </div>
+              {selectedPayment === 'alipay' && (
+                <span className="text-sm text-green-600 font-bold">✓ 已选择</span>
+              )}
             </div>
           </div>
         </div>

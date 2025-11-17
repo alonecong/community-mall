@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { getCategories, getFeaturedProducts, getPromotions } from '../lib/api'
 import { useCart } from '../lib/cart'
 import type { Category, Product } from '../types'
@@ -35,12 +36,11 @@ export default function Home() {
   const handleAddToCart = async (productId: string) => {
     try {
       await addToCart(productId)
-      // 更友好的提示
       const product = featuredProducts.find(p => p.id === productId)
-      alert(`✅ ${product?.name || '商品'} 已加入购物车`)
+      toast.success(`${product?.name || '商品'} 已加入购物车`)
     } catch (error) {
       console.error('添加到购物车失败:', error)
-      alert('❌ 添加失败，请检查登录状态')
+      toast.error('添加失败，请检查登录状态')
     }
   }
 
@@ -140,7 +140,7 @@ export default function Home() {
                     </div>
                     <button
                       onClick={() => handleAddToCart(product.id)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold text-xl active:scale-95 transition"
+                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-lg active:scale-95 transition"
                     >
                       +
                     </button>

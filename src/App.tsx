@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import { AuthProvider, useAuth } from './lib/auth'
 import { CartProvider } from './lib/cart'
 import Login from './pages/Login'
@@ -96,6 +97,16 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <AppRoutes />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 2000,
+              style: {
+                fontSize: '16px',
+                padding: '12px 16px',
+              },
+            }}
+          />
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>
