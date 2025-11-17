@@ -35,9 +35,12 @@ export default function Home() {
   const handleAddToCart = async (productId: string) => {
     try {
       await addToCart(productId)
-      alert('已添加到购物车')
+      // 更友好的提示
+      const product = featuredProducts.find(p => p.id === productId)
+      alert(`✅ ${product?.name || '商品'} 已加入购物车`)
     } catch (error) {
-      alert('添加失败，请重试')
+      console.error('添加到购物车失败:', error)
+      alert('❌ 添加失败，请检查登录状态')
     }
   }
 
@@ -75,11 +78,9 @@ export default function Home() {
           <div className="grid grid-cols-3 gap-2">
             {promotions.map((promo) => (
               <div key={promo.id} className="bg-white rounded-lg p-2 text-gray-900">
-                <img
-                  src={promo.product.image_url || 'https://via.placeholder.com/100'}
-                  alt={promo.product.name}
-                  className="w-full h-20 object-cover rounded mb-1"
-                />
+                <div className="w-full h-20 bg-gray-100 rounded mb-1 flex items-center justify-center">
+                  <span className="text-4xl">{promo.product.category?.icon || '🛍️'}</span>
+                </div>
                 <p className="text-sm font-bold truncate">{promo.product.name}</p>
                 <p className="text-red-500 font-bold">¥{promo.promotion_price}</p>
                 <button
@@ -121,11 +122,9 @@ export default function Home() {
 
             return (
               <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
-                <img
-                  src={product.image_url || 'https://via.placeholder.com/200'}
-                  alt={product.name}
-                  className="w-full h-40 object-cover"
-                />
+                <div className="w-full h-40 bg-gray-100 flex items-center justify-center">
+                  <span className="text-6xl">{product.category?.icon || '🛍️'}</span>
+                </div>
                 <div className="p-3">
                   <h3 className="font-bold text-lg mb-1 line-clamp-1">{product.name}</h3>
                   <p className="text-gray-600 text-sm mb-2">{product.description}</p>
@@ -141,7 +140,7 @@ export default function Home() {
                     </div>
                     <button
                       onClick={() => handleAddToCart(product.id)}
-                      className="bg-green-500 text-white px-4 py-2 rounded-lg font-bold text-lg"
+                      className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold text-xl active:scale-95 transition"
                     >
                       +
                     </button>

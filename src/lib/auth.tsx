@@ -16,80 +16,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // 检查当前用户
-    async function getUser() {
-      const { data: { user: authUser } } = await supabase.auth.getUser()
-
-      if (authUser) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', authUser.id)
-          .single()
-
-        setUser(profile)
+    // 检查本地存储的用户
+    const savedUser = localStorage.getItem('currentUser')
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser))
+      } catch (e) {
+        localStorage.removeItem('currentUser')
       }
-      setLoading(false)
     }
-
-    getUser()
-
-    // 监听认证状态变化
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
-
-          setUser(profile)
-        } else {
-          setUser(null)
-        }
-      }
-    )
-
-    return () => subscription.unsubscribe()
+    setLoading(false)
   }, [])
 
   const login = async (phone: string, fullName: string) => {
-    // 使用手机号作为用户名（简化版，不记密码）
-    const email = `${phone}@temp.local`
+    // 直接通过手机号查找用户
+    const { data: existingUser } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('phone', phone)
+      .single()
 
-    // 尝试登录
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: 'temp_password',
-    })
-
-    if (error) {
-      // 如果用户不存在，则注册新用户
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password: 'temp_password',
-      })
-
-      if (signUpError) throw signUpError
-
-      if (signUpData.user) {
-        // 创建用户资料
-        const { error: profileError } = await supabase
+    if (existingUser) {
+      // 用户存在，更新姓名（如果不同）
+      if (existingUser.full_name !== fullName) {
+        const { data: updatedUser, error } = await supabase
           .from('profiles')
-          .insert({
-            id: signUpData.user.id,
-            phone,
-            full_name: fullName,
-          })
+          .update({ full_name: fullName })
+          .eq('phone', phone)
+          .select()
+          .single()
 
-        if (profileError) throw profileError
+        if (error) throw error
+        setUser(updatedUser)
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser))
+      } else {
+        setUser(existingUser)
+        localStorage.setItem('currentUser', JSON.stringify(existingUser))
       }
+    } else {
+      // 新用户，创建记录（不依赖Supabase Auth）
+      const { data: newUser, error } = await supabase
+        .from('profiles')
+        .insert({
+          phone,
+          full_name: fullName,
+        })
+        .select()
+        .single()
+
+      if (error) throw error
+      setUser(newUser)
+      localStorage.setItem('currentUser', JSON.stringify(newUser))
     }
   }
 
-  const logout = async () => {
-    await supabase.auth.signOut()
+  const logout = () => {
+    setUser(null)
+    localStorage.removeItem('currentUser')
   }
 
   return (

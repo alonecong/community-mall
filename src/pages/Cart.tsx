@@ -63,11 +63,9 @@ export default function Cart() {
             return (
               <div key={item.id} className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex gap-4">
-                  <img
-                    src={item.product.image_url || 'https://via.placeholder.com/100'}
-                    alt={item.product.name}
-                    className="w-24 h-24 object-cover rounded"
-                  />
+                  <div className="w-24 h-24 bg-gray-100 rounded flex items-center justify-center">
+                    <span className="text-4xl">{item.product.category?.icon || '🛍️'}</span>
+                  </div>
                   <div className="flex-1">
                     <h3 className="font-bold text-lg mb-1">{item.product.name}</h3>
                     <p className="text-gray-600 text-sm mb-2">{item.product.description}</p>
@@ -79,14 +77,14 @@ export default function Cart() {
                       <div className="flex items-center gap-4">
                         <button
                           onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                          className="w-12 h-12 bg-gray-200 rounded-full text-2xl font-bold flex items-center justify-center"
+                          className="w-12 h-12 bg-gray-200 hover:bg-gray-300 rounded-full text-2xl font-bold flex items-center justify-center active:scale-95 transition"
                         >
                           -
                         </button>
                         <span className="text-2xl font-bold w-8 text-center">{item.quantity}</span>
                         <button
                           onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                          className="w-12 h-12 bg-green-500 rounded-full text-2xl font-bold flex items-center justify-center text-white"
+                          className="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full text-2xl font-bold flex items-center justify-center text-white active:scale-95 transition"
                         >
                           +
                         </button>
